@@ -285,9 +285,7 @@ const resendVerification = async (req, res) => {
       `,
     });
 
-    res
-      .status(200)
-      .json({ message: "Verification email resent successfully!" });
+    res.status(200).json({ message: "Verification email resent successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Failed to resend verification email" });
   }
