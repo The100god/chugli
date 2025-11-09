@@ -8,6 +8,7 @@ import {
   groupNameAtom,
   groupProfileAtom,
   isNewGroupWindowAtom,
+  responsiveDeviceAtom,
   selectedFriendAtom,
   selectedGroupAtom,
   userIdAtom,
@@ -35,6 +36,7 @@ const GroupChatPage = () => {
   const [, setSelectedGroup] = useAtom(selectedGroupAtom);
   const [, setSelectedFriend] = useAtom(selectedFriendAtom); // clear friend
   const [groups, setGroups] = useState<Group[]>([]);
+  const [, setShowLeft] = useAtom(responsiveDeviceAtom); 
 
   if (!userId && !socket) return null;
 
@@ -136,9 +138,9 @@ const GroupChatPage = () => {
   }, [socket]);
   // console.log("groups", groups);
   return (
-    <div className="flex h-[70%] p-2 flex-col space-y-5">
+    <div className="flex p-2 flex-col space-y-5 bg-[var(--background)] text-[var(--foreground)] h-full w-full rounded-md overflow-y-auto">
       <div
-        className="flex justify-center items-center text-center h-fit w-fit px-2 py-1 rounded-lg bg-green-500 hover:bg-green-600 border-amber-50 cursor-pointer"
+        className="flex justify-center items-center text-center h-fit w-fit px-2 py-1 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]/15 border-amber-50 cursor-pointer"
         onClick={() => setIsNewGroupWindow(true)}
       >
         {" "}
@@ -155,18 +157,19 @@ const GroupChatPage = () => {
           groups?.map((g, i) => (
             <div
               key={i}
-              className="flex items-center space-x-4 p-3 bg-gray-900 rounded-xl shadow-sm hover:bg-gray-800 transition cursor-pointer"
+              className="flex items-center space-x-4 p-3 bg-[var(--card)] text-[var(--foreground) rounded-md shadow-sm hover:bg-[var(--accent)]/15 border border-[var(--foreground)] hover:border-[var(--accent) transition cursor-pointer"
               onClick={() => {
                 setSelectedFriend(null);
                 setSelectedGroup(g);
+                setShowLeft(false);
               }}
             >
               <img
                 src={g?.groupProfilePic}
                 alt="Group"
-                className="w-12 h-12 rounded-full border-2 border-lime-300 object-cover"
+                className="w-12 h-12 rounded-full border-2 border-[var(--accent)] object-cover"
               />
-              <span className="text-lg font-medium">{g?.groupName}</span>
+              <span className="text-lg text-[var(--foreground)]] font-medium">{g?.groupName}</span>
             </div>
           ))}
       </div>
