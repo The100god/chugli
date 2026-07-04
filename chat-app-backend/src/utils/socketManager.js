@@ -145,7 +145,7 @@ const initializeSocket = (io) => {
     socket.on("messagesRead", async ({ chatId, readerId, senderId }) => {
       await Message.updateMany(
         {
-          chat: chatId,
+          chatId: chatId,
           sender: senderId,
           receiver: readerId,
           isRead: false,
@@ -244,8 +244,32 @@ const initializeSocket = (io) => {
             profilePic: sender.profilePic,
           });
         }
+
+        // Confirm to sender that request was sent
+        const senderSocketId = users.get(senderId);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit("friendRequestSent", {
+            receiverId,
+          });
+        }
       } catch (error) {
         console.error("Error sending friend request:", error);
+      }
+    });
+
+    // Get list of user IDs that the current user has sent friend requests to
+    socket.on("getSentFriendRequests", async ({ userId }) => {
+      try {
+        // Find all users who have this userId in their friendRequests array
+        const usersWithPendingRequests = await User.find(
+          { friendRequests: userId },
+          { _id: 1 }
+        );
+        const sentIds = usersWithPendingRequests.map((u) => u._id.toString());
+        socket.emit("sentFriendRequestsList", sentIds);
+      } catch (error) {
+        console.error("❌ Error in getSentFriendRequests:", error.message);
+        socket.emit("sentFriendRequestsList", []);
       }
     });
 
@@ -268,6 +292,47 @@ const initializeSocket = (io) => {
       } catch (error) {
         console.error("❌ Error in getFriendRequests:", error.message);
         socket.emit("friendRequestsList", []);
+      }
+    });
+
+    // Get detailed sent friend requests (with username + profilePic)
+    socket.on("getSentFriendRequestsDetailed", async ({ userId }) => {
+      try {
+        const usersWithPendingRequests = await User.find(
+          { friendRequests: userId },
+          { _id: 1, username: 1, profilePic: 1 }
+        );
+        socket.emit("sentFriendRequestsDetailedList", usersWithPendingRequests);
+      } catch (error) {
+        console.error("❌ Error in getSentFriendRequestsDetailed:", error.message);
+        socket.emit("sentFriendRequestsDetailedList", []);
+      }
+    });
+
+    // Cancel a sent friend request
+    socket.on("cancelFriendRequest", async ({ senderId, receiverId }) => {
+      try {
+        const receiver = await User.findById(receiverId);
+        if (!receiver) return;
+
+        receiver.friendRequests = receiver.friendRequests.filter(
+          (id) => id.toString() !== senderId
+        );
+        await receiver.save();
+
+        // Notify sender
+        const senderSocketId = users.get(senderId);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit("friendRequestCancelled", { receiverId });
+        }
+
+        // Notify receiver to remove from their incoming list
+        const receiverSocketId = users.get(receiverId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("friendRequestRemoved", { senderId });
+        }
+      } catch (error) {
+        console.error("❌ Error cancelling friend request:", error.message);
       }
     });
 

@@ -133,7 +133,6 @@ const handleFriendRequestSocket = async ({ senderId, receiverId, status,io, user
         };
       })
     );
-    console.log("unreadMessagesCount1", unreadMessagesCount)
     // console.log("friendDetails", friendDetails)
     return friendDetails;
   };

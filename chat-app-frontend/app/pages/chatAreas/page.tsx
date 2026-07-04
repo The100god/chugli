@@ -15,7 +15,7 @@ import MediaViewerModal from "../../components/MediaViewerModal";
 import EmojiPicker from "../../components/EmojiPicker";
 import VoiceRecorder from "../../components/VoiceRecorder";
 import { X } from "lucide-react";
-import ChatAreaLoading from "../../components/ChatAreaLoading";
+import ScaleTN from "../../components/ScaleTN";
 import { motion } from "framer-motion";
 
 interface Message {
@@ -23,12 +23,12 @@ interface Message {
   chatId?: string;
   groupId?: string;
   sender?:
-    | {
-        _id: string;
-        username: string;
-        profilePic: string;
-      }
-    | string;
+  | {
+    _id: string;
+    username: string;
+    profilePic: string;
+  }
+  | string;
   receiver?: string | object;
   content?: string;
   media?: string[]; // not [string]
@@ -115,9 +115,9 @@ export default function ChatArea() {
           setChatId(data._id);
           // console.log("data", data._id);
 
-          if (socket && chatId) {
-            // console.log("Joining chat room:", chatId);
-            socket.emit("join", chatId);
+          if (socket && data._id) {
+            // console.log("Joining chat room:", data._id);
+            socket.emit("join", data._id);
           }
 
           const messagesRes = await fetch(
@@ -164,7 +164,7 @@ export default function ChatArea() {
     };
 
     fetchChat();
-  }, [selectedFriend, selectedGroup, chatId, socket]);
+  }, [selectedFriend, selectedGroup, socket, userId]);
 
   useEffect(() => {
     if (socket && selectedGroup?._id) {
@@ -309,11 +309,11 @@ export default function ChatArea() {
         body: JSON.stringify(
           selectedGroup
             ? {
-                groupId: selectedGroup._id,
-                senderId: userId,
-                content: messageInput.trim(),
-                media: mediaBase64,
-              }
+              groupId: selectedGroup._id,
+              senderId: userId,
+              content: messageInput.trim(),
+              media: mediaBase64,
+            }
             : newMessage
         ),
       });
@@ -328,18 +328,18 @@ export default function ChatArea() {
         selectedGroup ? "sendGroupMessage" : "sendMessage",
         selectedGroup
           ? {
-              groupId: selectedGroup._id,
-              senderId: userId,
-              content: savedMessage.content,
-              media: savedMessage.media,
-            }
+            groupId: selectedGroup._id,
+            senderId: userId,
+            content: savedMessage.content,
+            media: savedMessage.media,
+          }
           : {
-              chatId: savedMessage.chatId,
-              senderId: savedMessage.sender?._id,
-              receiverId: savedMessage.receiver,
-              media: savedMessage.media,
-              content: savedMessage.content,
-            }
+            chatId: savedMessage.chatId,
+            senderId: savedMessage.sender?._id,
+            receiverId: savedMessage.receiver,
+            media: savedMessage.media,
+            content: savedMessage.content,
+          }
       );
 
       // Update local message state
@@ -381,7 +381,7 @@ export default function ChatArea() {
     return () => {
       socket.off("messagesReadAck", handleMessagesReadAck);
     };
-  }, [friends]);
+  }, [socket, userId]);
 
   useEffect(() => {
     if (!socket) return;
@@ -655,9 +655,8 @@ export default function ChatArea() {
                   >
                     {msg.media && msg.media?.length > 0 && (
                       <div
-                        className={`grid ${
-                          msg.media?.length > 1 ? "grid-cols-2" : "grid-cols-1"
-                        } gap-2`}
+                        className={`grid ${msg.media?.length > 1 ? "grid-cols-2" : "grid-cols-1"
+                          } gap-2`}
                         onClick={(e) => {
                           // Find the index of the clicked child
                           const target = e.target as HTMLMediaElement;
@@ -686,7 +685,7 @@ export default function ChatArea() {
                               src={url}
                               onClick={openModal}
                               className="w-24 h-24 cursor-pointer rounded-md border border-[var(--accent)]"
-                              // controls
+                            // controls
                             />
                           ) : url.endsWith(".webm") ? (
                             <audio
@@ -759,7 +758,7 @@ export default function ChatArea() {
         </div>
       ) : (
         <div className="h-[100%] bg-[var(--muted)] p-4 rounded-lg flex items-center justify-center text-[var(--foreground)] text-sm">
-          <ChatAreaLoading />
+          <ScaleTN variant="chat" />
         </div>
       )}
       {!loadingMessages &&

@@ -38,11 +38,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
-useEffect(() => {
-  const verified = searchParams.get("verified");
-  if (verified === "failed") setMessage("❌ Verification link expired.");
-  else if (verified === "already") setMessage("✅ Email already verified.");
-}, [searchParams]);
+  useEffect(() => {
+    const verified = searchParams.get("verified");
+    if (verified === "failed") setMessage("❌ Verification link expired.");
+    else if (verified === "already") setMessage("✅ Email already verified.");
+  }, [searchParams]);
 
   useEffect(() => {
     if (varUserId) {
@@ -100,14 +100,14 @@ useEffect(() => {
 
         setMessage(
           response.data.message ||
-            "Signup successful! Please check your email to verify your account before logging in."
+          "Signup successful! Please check your email to verify your account before logging in."
         );
       }
     } catch (error: any) {
       setError(
         error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Something went wrong"
+        error.response?.data?.error ||
+        "Something went wrong"
       );
       setMessage(null);
     }

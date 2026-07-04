@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import ScaleTN from "./ScaleTN";
 
 interface Friend {
   friendId: string;
@@ -17,7 +18,7 @@ const AllFriends: React.FC<AllFriendsListProps> = ({ friends, loading }) => {
     <div className="p-4 w-full bg-transparent">
       <h2 className="text-lg text-[var(--foreground)] font-semibold mb-4">Friends</h2>
       {loading ? (
-        <p>Loading...</p>
+        <ScaleTN rows={5} />
       ) : (
         <ul className="space-y-3 w-full">
           {Array.isArray(friends) && friends?.map((friend) => (
