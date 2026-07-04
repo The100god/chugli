@@ -9,7 +9,7 @@ import { useAtom } from "jotai";
 import { floatingEmojisAtom } from "../states/States";
 import { Eye, EyeClosed } from "lucide-react";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface AuthFormProps {
   type: "signup" | "login";
@@ -31,7 +31,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const { login } = useAuth();
   const [floatingEmojis] = useAtom(floatingEmojisAtom);
   const [seePassword, setSeePassword] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
   const searchParams = useSearchParams();
   useEffect(() => {
     const savedTheme = localStorage.getItem("chatTheme") || "light";
@@ -84,7 +84,7 @@ useEffect(() => {
         if (token && returnedUserId) {
           login(token);
           setVarUserId(returnedUserId);
-          localStorage.setItem("userId", returnedUserId);
+          localStorage.setItem("chatAppUserId", returnedUserId);
         }
         setMessage(response.data.message || "success");
         setError(null);

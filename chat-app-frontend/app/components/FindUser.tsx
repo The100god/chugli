@@ -40,7 +40,7 @@ const searchUsers = async (username: string, userId: string | null) => {
 
 const FindUser = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [message, setMessage] = useState("");
 
   const [userId] = useAtom(userIdAtom);
@@ -68,7 +68,7 @@ const FindUser = () => {
     debounceTimeout = setTimeout(async () => {
       const foundUsers = await searchUsers(searchQuery.trim(), userId);
       // console.log("foundUsers", foundUsers);
-      setUsers(foundUsers);
+      setUsers(Array.isArray(foundUsers) ? foundUsers : []);
     }, 300);
 
     return () => clearTimeout(debounceTimeout);
@@ -108,7 +108,7 @@ const FindUser = () => {
       {message && <p className="text-green-400 p-2">{message}</p>}
 
       <div className="flex flex-col justify-start items-start gap-4 w-full px-2 py-6">
-        {users?.map((user: any) => (
+        {Array.isArray(users) && users?.map((user: any) => (
           <div
             key={user?._id}
             className="flex flex-row justify-between items-center bg-[var(--card)] hover:bg-[var(--accent)]/15 text-[var(--foreground)] border border-[var(--foreground)] hover:border-[var(--accent)] rounded-lg w-[80%] px-3 py-4"

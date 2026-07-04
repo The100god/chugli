@@ -64,7 +64,7 @@ export default function LeftSection() {
   };
 
   useEffect(() => {
-    const id = localStorage.getItem("userId");
+    const id = localStorage.getItem("chatAppUserId");
     if (id) {
       setUserId(id);
     }

@@ -9,8 +9,41 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const createToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
+};
+
+const generateRefreshToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, {
     expiresIn: "30d",
   });
+};
+//` Refresh Token Handler
+const refreshTokenHandler = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+      return res.status(401).json({ message: "No refresh token" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    const newAccessToken = createToken(user._id);
+
+    res.status(200).json({ token: newAccessToken });
+  } catch (error) {
+    console.error("Refresh token error:", error);
+
+    return res.status(401).json({
+      message: "Refresh token expired",
+    });
+  }
 };
 
 // ✅ Nodemailer setup (for verification)
@@ -46,19 +79,53 @@ const googleAuth = async (req, res) => {
     // 3️⃣ Check if the user already exists
     let user = await User.findOne({ email });
 
-    if (!user) {
-      // 4️⃣ Create new user if not exist
+    // If user exists but not verified, mark verified
+    if (user) {
+      if (!user.isVerified) {
+        user.isVerified = true;
+      }
+
+      // If old user does not have self-friend, fix it
+      if (!user.friends.includes(user._id)) {
+        user.friends.push(user._id);
+      }
+
+      await user.save();
+    } else {
+      // Create new user only if none exists
       user = await User.create({
         username: name,
         email,
-        password: "GOOGLE_AUTH_USER", // dummy password
+        password: "GOOGLE_AUTH_USER",
         profilePic: picture,
         isVerified: true,
       });
+
+      // MAKE USER FRIEND OF HIMSELF
+      user.friends = [user._id];
+      await user.save();
     }
+
+    // if (!user) {
+    //   // 4️⃣ Create new user if not exist
+    //   user = await User.create({
+    //     username: name,
+    //     email,
+    //     password: "GOOGLE_AUTH_USER", // dummy password
+    //     profilePic: picture,
+    //     isVerified: true,
+    //   });
+    // }
 
     // 5️⃣ Generate JWT for our app
     const appToken = createToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true, // true on Render
+      sameSite: "none", // required for Netlify ↔ Render
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       message: "Google authentication successful",
@@ -183,16 +250,33 @@ const verifyEmail = async (req, res) => {
         password,
         isVerified: true,
       });
+
+      // MAKE USER FRIEND OF HIMSELF
+      existingUser.friends = [existingUser._id];
+      await existingUser.save();
+
       console.log("✅ Created verified user:", email);
     } else {
       // Update existing record to verified
       existingUser.isVerified = true;
+      // FIX MISSING SELF-FRIEND
+      if (!existingUser.friends.includes(existingUser._id)) {
+        existingUser.friends.push(existingUser._id);
+      }
+
       await existingUser.save();
       console.log("✅ Marked existing user as verified:", email);
     }
 
     // 4️⃣ Create JWT token for login
     const appToken = createToken(existingUser._id);
+    const refreshToken = generateRefreshToken(existingUser._id);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true, // true on Render
+      sameSite: "none", // required for Netlify ↔ Render
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
     // 5️⃣ Redirect user to frontend with token (auto-login)
     const redirectURL = `${process.env.CLIENT_URL}/?token=${appToken}`;
@@ -216,9 +300,9 @@ const verifyEmail = async (req, res) => {
   } catch (error) {
     console.error("Email Verification Error:", error);
     if (!res.headersSent) {
-      res.status(302).redirect(
-        `${process.env.CLIENT_URL}/pages/login?verified=failed`
-      );
+      res
+        .status(302)
+        .redirect(`${process.env.CLIENT_URL}/pages/login?verified=failed`);
     }
     // res.redirect(`${process.env.CLIENT_URL}/pages/login?verified=failed`);
     // res.status(400).send("<h2>❌ Invalid or expired verification link.</h2>");
@@ -247,7 +331,20 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid User Details" });
     }
 
+    // FIX MISSING SELF-FRIEND
+    if (!user.friends.includes(user._id)) {
+      user.friends.push(user._id);
+      await user.save();
+    }
+
     const token = createToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true, // true on Render
+      sameSite: "none", // required for Netlify ↔ Render
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
     //  jwt.sign({id: user._id}, process.env.JWT_SECRET, {
     //     expiresIn:"30d"
     // })
@@ -285,7 +382,9 @@ const resendVerification = async (req, res) => {
       `,
     });
 
-    res.status(200).json({ message: "Verification email resent successfully!" });
+    res
+      .status(200)
+      .json({ message: "Verification email resent successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Failed to resend verification email" });
   }
@@ -352,4 +451,5 @@ module.exports = {
   googleAuth,
   verifyEmail,
   resendVerification,
+  refreshTokenHandler,
 };

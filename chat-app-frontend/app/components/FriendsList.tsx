@@ -33,7 +33,7 @@ const FriendsList: React.FC<FriendsListProps> = ({ loading }) => {
   // ✅ import and use atoms for find friend redirection
   const [, setFindFriend] = useAtom(findFriendAtom);
   const [, setFindFriendWithChat] = useAtom(findFriendWithChatAtom);
-
+const safeFriends = Array.isArray(friends) ? friends : [];
   // 🔁 Automatically redirect new users to “Find Friend”
   useEffect(() => {
     if (!loading && friends.length === 0) {
@@ -73,14 +73,14 @@ const FriendsList: React.FC<FriendsListProps> = ({ loading }) => {
     <div className="p-4 bg-[var(--background)] text-[var(--foreground)] h-full w-full rounded-md overflow-y-auto">
       {loading ? (
         <p>Loading...</p>
-      ): friends.length === 0 ? (
+      ): safeFriends.length < 1 ? (
         <div className="text-center mt-10 text-[var(--foreground)]/70">
           <p>No friends found 🫠</p>
           <p className="text-sm mt-2">Redirecting to Find Friends...</p>
         </div>
       )  : (
         <ul className="space-y-3">
-          {friends && friends.map((friend) => (
+          {safeFriends && safeFriends.map((friend) => (
             <li
               key={friend?.friendId}
               onClick={() => handleSelectFriend(friend)}

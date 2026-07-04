@@ -2,7 +2,8 @@
 import { useAtom } from "jotai";
 import { usePathname, useRouter } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, userAtom } from "../states/States";
+import { User, userAtom, userIdAtom } from "../states/States";
+import { apiFetch } from "../utils/apiFetch";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const pathname = usePathname();
   const [user, setUser] = useAtom<User>(userAtom);
   const [, setLoading] = useState<boolean>(true);
+  const [, setUserId] = useAtom(userIdAtom);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -35,7 +37,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [router]);
 
-
   useEffect(() => {
     const token = localStorage.getItem("chatAppToken");
     if (!token) {
@@ -43,9 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
-    fetch("http://localhost:5000/api/users/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    //
+    apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Unauthorized");
         const data = await res.json();
@@ -55,6 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           profilePic: data.profilePic,
           about: data.about || "Hey there! I’m using ChatApp 💬",
         });
+        setUserId(data._id); // 🔥 IMPORTANT: store userId globally
+        localStorage.setItem("chatAppUserId", data._id); // optional
       })
       .catch(() => {
         localStorage.removeItem("chatAppToken");
@@ -85,8 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Login function
 
-  const login = (token: string) => {
+  const login = (token: string, userId?: string) => {
     localStorage.setItem("chatAppToken", token);
+    if (userId) {
+      setUserId(userId);
+      localStorage.setItem("chatAppUserId", userId);
+    }
+
     setIsAuthenticated(true);
     router.push("/");
   };
