@@ -17,7 +17,7 @@ export default function ChangePasswordForm({
   const [seeNewPassword, setSeeNewPassword] = useState(false);
   const [seeCurrentPassword, setSeeCurrentPassword] = useState(false);
 
-  const API_BASE = `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users`; // change if required
+  const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users`; // change if required
 
   useEffect(() => {
     return () => {
@@ -211,7 +211,7 @@ export default function ChangePasswordForm({
         {loading ? "Saving..." : "Change Password"}
       </button>
       <button
-      onClick={()=>onClose()}
+        onClick={() => onClose()}
         disabled={loading}
         className="px-4 py-2 bg-red-600 hover:bg-red-700/15 text-[var(--card-foreground)] border border-[var(--background)] hover:border-red-600 cursor-pointer rounded"
       >

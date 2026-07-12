@@ -29,12 +29,12 @@ const FriendsList: React.FC<FriendsListProps> = ({ loading }) => {
   const [friends, setFriends] = useAtom(friendsAtom);
   const [, setSelectedGroup] = useAtom(selectedGroupAtom);
   const [userId] = useAtom(userIdAtom);
-  const [, setShowLeft] = useAtom(responsiveDeviceAtom); 
+  const [, setShowLeft] = useAtom(responsiveDeviceAtom);
 
   // ✅ import and use atoms for find friend redirection
   const [, setFindFriend] = useAtom(findFriendAtom);
   const [, setFindFriendWithChat] = useAtom(findFriendWithChatAtom);
-const safeFriends = Array.isArray(friends) ? friends : [];
+  const safeFriends = Array.isArray(friends) ? friends : [];
   // 🔁 Automatically redirect new users to “Find Friend”
   useEffect(() => {
     if (!loading && friends.length === 0) {
@@ -52,7 +52,7 @@ const safeFriends = Array.isArray(friends) ? friends : [];
     // const userId = localStorage.getItem("userId");
     console.log("ids");
     if (userId) {
-      fetch(`${process.env.NEXT_API_URL || "http://localhost:5000"}/api/message/mark-read`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/message/mark-read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -74,12 +74,12 @@ const safeFriends = Array.isArray(friends) ? friends : [];
     <div className="p-4 bg-[var(--background)] text-[var(--foreground)] h-full w-full rounded-md overflow-y-auto">
       {loading ? (
         <ScaleTN rows={5} />
-      ): safeFriends.length < 1 ? (
+      ) : safeFriends.length < 1 ? (
         <div className="text-center mt-10 text-[var(--foreground)]/70">
           <p>No friends found 🫠</p>
           <p className="text-sm mt-2">Redirecting to Find Friends...</p>
         </div>
-      )  : (
+      ) : (
         <ul className="space-y-3">
           {safeFriends && safeFriends.map((friend) => (
             <li
@@ -94,11 +94,10 @@ const safeFriends = Array.isArray(friends) ? friends : [];
               />
               <div className="flex-1">
                 <p
-                  className={`text-sm ${
-                    friend?.unreadMessagesCount > 0
+                  className={`text-sm ${friend?.unreadMessagesCount > 0
                       ? "font-bold text-[var(--foreground)]"
                       : "font-medium text-[var(--foreground)]"
-                  }`}
+                    }`}
                 >
                   {friend.username}
                 </p>

@@ -16,7 +16,7 @@ let debounceTimeout: NodeJS.Timeout;
 // Function to search users by username
 const searchUsers = async (username: string, userId: string | null) => {
   const response = await fetch(
-    `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users/search?username=${username}&userId=${userId}`
+    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/search?username=${username}&userId=${userId}`
   );
   return await response.json();
 };
@@ -120,11 +120,10 @@ const FindUser = () => {
                 <p>{user?.username}</p>
               </div>
               <button
-                className={`flex justify-center items-center w-fit h-fit px-3 py-1 rounded-lg text-sm font-medium transition ${
-                  isRequested
+                className={`flex justify-center items-center w-fit h-fit px-3 py-1 rounded-lg text-sm font-medium transition ${isRequested
                     ? "bg-yellow-600/80 text-white cursor-not-allowed"
                     : "bg-green-600 hover:bg-green-500 cursor-pointer text-white"
-                }`}
+                  }`}
                 onClick={() => !isRequested && handleSendRequest(user._id)}
                 disabled={isRequested}
               >

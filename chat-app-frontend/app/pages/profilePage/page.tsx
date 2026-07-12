@@ -5,7 +5,7 @@ import { Pencil, Mail, X, Camera } from "lucide-react";
 import { floatingEmojisAtom, userAtom } from "../../states/States";
 import { motion } from "framer-motion";
 
-const API_BASE = `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users`;
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users`;
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = useAtom(userAtom);
@@ -193,9 +193,9 @@ const ProfilePage: React.FC = () => {
             </>
           )}
         </div>
-         <div className="text-pretty text-[var(--card)] mb-6">
-                Personalize your profile to make it feel like home.
-              </div>
+        <div className="text-pretty text-[var(--card)] mb-6">
+          Personalize your profile to make it feel like home.
+        </div>
 
         {/* About Field */}
         <div className="flex flex-col items-center w-full mb-4 text-center">
@@ -233,7 +233,7 @@ const ProfilePage: React.FC = () => {
       {/* Profile Image Modal */}
       {previewModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md"
-        style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+          style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
         >
           <div className="relative">
             <img

@@ -50,7 +50,7 @@ const GroupChatPage = () => {
         superAdmin: userId,
       };
       const groupData = await fetch(
-        `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/groups/create-group`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/groups/create-group`,
         {
           method: "Post",
           headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ const GroupChatPage = () => {
     const fetchGroups = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/groups/${userId}`
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/groups/${userId}`
         );
         const allGroups = await response.json();
         // console.log("All Groups:", allGroups);

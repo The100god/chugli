@@ -134,7 +134,7 @@ export default function ChatArea() {
       setHasAutoScrolled(false); // allow auto-scroll for new friend
       try {
         if (selectedFriend) {
-          const res = await fetch(`${process.env.NEXT_API_URL || "http://localhost:5000"}/api/chat`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify([userId, selectedFriend?.friendId]),
@@ -150,7 +150,7 @@ export default function ChatArea() {
           }
 
           const messagesRes = await fetch(
-            `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/message/${data._id}`
+            `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/message/${data._id}`
           );
           const messagesData = await messagesRes.json();
           if (messagesData.length > 0) {
@@ -163,7 +163,7 @@ export default function ChatArea() {
           }
         } else if (selectedGroup) {
           const res = await fetch(
-            `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/groups/group-message/${selectedGroup._id}`
+            `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/groups/group-message/${selectedGroup._id}`
           );
           const messagesData = await res.json();
           setChatId(selectedGroup._id);
@@ -332,8 +332,8 @@ export default function ChatArea() {
 
       // console.log("selectedGroup._id", selectedGroup?._id);
       const endpoint = selectedGroup
-        ? `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/groups/send-group-message`
-        : `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/message`;
+        ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/groups/send-group-message`
+        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/message`;
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -921,8 +921,8 @@ export default function ChatArea() {
               <button
                 onClick={() => setShowTimerDropdown(!showTimerDropdown)}
                 className={`flex items-center gap-1 cursor-pointer px-3 py-2 border-1 rounded transition-all ${disappearDuration > 0
-                    ? "border-[var(--accent)] bg-[var(--accent)]/20 text-[var(--accent)]"
-                    : "border-[var(--accent)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--accent)]/15"
+                  ? "border-[var(--accent)] bg-[var(--accent)]/20 text-[var(--accent)]"
+                  : "border-[var(--accent)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--accent)]/15"
                   }`}
                 title="Set disappearing timer"
               >
@@ -953,8 +953,8 @@ export default function ChatArea() {
                           setShowTimerDropdown(false);
                         }}
                         className={`w-full text-left px-3 py-2 rounded-lg text-sm cursor-pointer transition-all flex items-center justify-between ${disappearDuration === opt.value
-                            ? "bg-[var(--accent)]/20 text-[var(--accent)] font-semibold"
-                            : "text-[var(--foreground)] hover:bg-[var(--accent)]/10"
+                          ? "bg-[var(--accent)]/20 text-[var(--accent)] font-semibold"
+                          : "text-[var(--foreground)] hover:bg-[var(--accent)]/10"
                           }`}
                       >
                         <span>{opt.value === 0 ? "🚫 Off" : `⏱️ ${opt.label}`}</span>

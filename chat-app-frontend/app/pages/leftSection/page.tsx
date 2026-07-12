@@ -52,7 +52,7 @@ export default function LeftSection() {
     try {
       const token = localStorage.getItem("chatAppToken");
       const response = await fetch(
-        `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/friends/get-friends/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/friends/get-friends/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -64,7 +64,7 @@ export default function SettingsPage() {
     try {
       const token = localStorage.getItem("chatAppToken");
       const res = await fetch(
-        `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users/deleteAccount`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/deleteAccount`,
         {
           method: "DELETE",
           headers: {
@@ -166,25 +166,22 @@ export default function SettingsPage() {
           <h3 className="text-lg font-bold mb-3">Chat Preferences</h3>
           <div className="flex flex-row justify-between items-center space-x-3">
             <button
-              className={`flex w-full justify-center items-center cursor-pointer ${
-                mode === "light" ? "bg-[var(--accent)]/15" : "bg-[var(--card)]"
-              } hover:bg-[var(--accent)]/15 px-2 py-3 rounded-md border border-[var(--foreground)] hover:border-[var(--accent)]`}
+              className={`flex w-full justify-center items-center cursor-pointer ${mode === "light" ? "bg-[var(--accent)]/15" : "bg-[var(--card)]"
+                } hover:bg-[var(--accent)]/15 px-2 py-3 rounded-md border border-[var(--foreground)] hover:border-[var(--accent)]`}
               onClick={() => handleThemeToggle("light")}
             >
               🌞 Light
             </button>
             <button
-              className={`flex w-full justify-center items-center cursor-pointer ${
-                mode === "dark" ? "bg-[var(--accent)]/15" : "bg-[var(--card)]"
-              } hover:bg-[var(--accent)]/15 px-2 py-3 rounded-md border border-[var(--foreground)] hover:border-[var(--accent)]`}
+              className={`flex w-full justify-center items-center cursor-pointer ${mode === "dark" ? "bg-[var(--accent)]/15" : "bg-[var(--card)]"
+                } hover:bg-[var(--accent)]/15 px-2 py-3 rounded-md border border-[var(--foreground)] hover:border-[var(--accent)]`}
               onClick={() => handleThemeToggle("dark")}
             >
               🌙 Dark
             </button>
             <button
-              className={`flex w-full justify-center items-center cursor-pointer ${
-                mode === "aurora" ? "bg-[var(--accent)]/15" : "bg-[var(--card)]"
-              } hover:bg-[var(--accent)]/15 px-2 py-3 rounded-md border border-[var(--foreground)] hover:border-[var(--accent)]`}
+              className={`flex w-full justify-center items-center cursor-pointer ${mode === "aurora" ? "bg-[var(--accent)]/15" : "bg-[var(--card)]"
+                } hover:bg-[var(--accent)]/15 px-2 py-3 rounded-md border border-[var(--foreground)] hover:border-[var(--accent)]`}
               onClick={() => handleThemeToggle("aurora")}
             >
               🌌 Aurora
@@ -244,11 +241,10 @@ export default function SettingsPage() {
 
       {/* Change Password Modal */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity ${
-          changePasswordOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity ${changePasswordOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       >
-        <div className="bg-[var(--background)] p-6 rounded-lg shadow-lg w-full max-w-md"> 
+        <div className="bg-[var(--background)] p-6 rounded-lg shadow-lg w-full max-w-md">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-[var(--foreground)]">Change Password</h2>
             <button
@@ -257,16 +253,15 @@ export default function SettingsPage() {
             >
               &times;
             </button>
-          </div>    
+          </div>
           <ChangePasswordForm onClose={() => setChangePasswordOpen(false)} />
         </div>
       </div>
 
       {/* Delete Account Confirmation Modal */}
       <div
-        className={`fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center transition-opacity ${
-          deleteAccountOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center transition-opacity ${deleteAccountOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
       >
         <div className="bg-[var(--background)] border border-red-800 p-6 rounded-xl shadow-2xl w-full max-w-md mx-4">
           <div className="flex justify-between items-center mb-4">
@@ -307,11 +302,10 @@ export default function SettingsPage() {
             <button
               onClick={handleDeleteAccount}
               disabled={deleteConfirmText !== "DELETE" || deleting}
-              className={`flex-1 py-2 rounded-md cursor-pointer font-semibold text-sm transition ${
-                deleteConfirmText === "DELETE" && !deleting
+              className={`flex-1 py-2 rounded-md cursor-pointer font-semibold text-sm transition ${deleteConfirmText === "DELETE" && !deleting
                   ? "bg-red-600 hover:bg-red-700 text-white"
                   : "bg-red-900/30 text-red-800 cursor-not-allowed"
-              }`}
+                }`}
             >
               {deleting ? "Deleting..." : "Delete My Account"}
             </button>
@@ -350,14 +344,12 @@ function ToggleItem({ icon, label, enabled, onToggle }: any) {
       </div>
       <button
         onClick={onToggle}
-        className={`w-12 h-6 flex items-center rounded-full transition ${
-          enabled ? "bg-[var(--accent)]" : "bg-gray-500"
-        }`}
+        className={`w-12 h-6 flex items-center rounded-full transition ${enabled ? "bg-[var(--accent)]" : "bg-gray-500"
+          }`}
       >
         <div
-          className={`w-5 h-5 bg-[var(--background)] rounded-full shadow transform transition ${
-            enabled ? "translate-x-6" : "translate-x-1"
-          }`}
+          className={`w-5 h-5 bg-[var(--background)] rounded-full shadow transform transition ${enabled ? "translate-x-6" : "translate-x-1"
+            }`}
         />
       </button>
     </div>
