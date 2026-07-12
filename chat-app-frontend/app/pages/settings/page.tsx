@@ -21,6 +21,30 @@ export default function SettingsPage() {
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [user?.profilePic]);
+
+  const getInitials = (name?: string) => {
+    if (!name) return "";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const isImageNotFound = (pic?: string) => {
+    if (!pic) return true;
+    return (
+      pic === "/user.jpg" ||
+      pic.includes("default-profile-pic") ||
+      pic.includes("encrypted-tbn0.gstatic.com") ||
+      pic.trim() === ""
+    );
+  };
 
   const handleThemeToggle = (theme: "light" | "dark" | "aurora") => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -40,7 +64,7 @@ export default function SettingsPage() {
     try {
       const token = localStorage.getItem("chatAppToken");
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/users/deleteAccount`,
+        `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users/deleteAccount`,
         {
           method: "DELETE",
           headers: {
@@ -77,11 +101,18 @@ export default function SettingsPage() {
         <section>
           <h3 className="text-lg font-bold mb-3">Profile</h3>
           <div className="flex items-center gap-4 bg-[var(--card)] rounded-xl p-4">
-            <img
-              src={user?.profilePic}
-              alt="profile"
-              className="w-16 h-16 rounded-full object-cover border-2 border-[var(--accent)]"
-            />
+            {isImageNotFound(user?.profilePic) || imageError ? (
+              <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-tr from-[var(--primary)] to-[var(--accent)] text-white font-bold text-xl border-2 border-[var(--accent)] shadow-inner">
+                {getInitials(user?.username)}
+              </div>
+            ) : (
+              <img
+                src={user?.profilePic}
+                alt="profile"
+                className="w-16 h-16 rounded-full object-cover border-2 border-[var(--accent)]"
+                onError={() => setImageError(true)}
+              />
+            )}
             <div className="flex flex-col">
               <span className="text-xl font-semibold">{user?.username}</span>
               <span className="text-[var(--foreground)]/35 text-sm">

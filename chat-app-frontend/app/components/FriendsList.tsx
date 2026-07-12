@@ -52,7 +52,7 @@ const safeFriends = Array.isArray(friends) ? friends : [];
     // const userId = localStorage.getItem("userId");
     console.log("ids");
     if (userId) {
-      fetch("http://localhost:5000/api/message/mark-read", {
+      fetch(`${process.env.NEXT_API_URL || "http://localhost:5000"}/api/message/mark-read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

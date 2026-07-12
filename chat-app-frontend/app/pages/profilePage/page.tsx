@@ -5,7 +5,7 @@ import { Pencil, Mail, X, Camera } from "lucide-react";
 import { floatingEmojisAtom, userAtom } from "../../states/States";
 import { motion } from "framer-motion";
 
-const API_BASE = "http://localhost:5000/api/users";
+const API_BASE = `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users`;
 
 const ProfilePage: React.FC = () => {
   const [user, setUser] = useAtom(userAtom);
@@ -13,6 +13,30 @@ const ProfilePage: React.FC = () => {
   const [isEditingAbout, setIsEditingAbout] = useState(false);
   const [previewModal, setPreviewModal] = useState(false);
   const [floatingEmojis] = useAtom(floatingEmojisAtom);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [user?.profilePic]);
+
+  const getInitials = (name?: string) => {
+    if (!name) return "";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const isImageNotFound = (pic?: string) => {
+    if (!pic) return true;
+    return (
+      pic === "/user.jpg" ||
+      pic.includes("default-profile-pic") ||
+      pic.includes("encrypted-tbn0.gstatic.com") ||
+      pic.trim() === ""
+    );
+  };
 
   const updateUser = async (updatedData: any) => {
     try {
@@ -102,12 +126,19 @@ const ProfilePage: React.FC = () => {
       </div>
       <div className="flex flex-col justify-start items-center w-full max-w-md bg-[var(--card-foreground)] text-[var(--card)] p-4 rounded-2xl shadow-inner overflow-y-auto space-y-4">
         <div className="relative flex flex-col items-center">
-          <img
-            src={user?.profilePic}
-            alt="Profile"
-            className="w-32 h-32 rounded-full object-cover border-4 border-[var(--accent)] cursor-pointer hover:scale-105 transition"
-            onClick={() => setPreviewModal(true)}
-          />
+          {isImageNotFound(user?.profilePic) || imageError ? (
+            <div className="w-32 h-32 rounded-full flex items-center justify-center bg-gradient-to-tr from-[var(--primary)] to-[var(--accent)] text-white font-bold text-4xl border-4 border-[var(--accent)] select-none shadow-inner">
+              {getInitials(user?.username)}
+            </div>
+          ) : (
+            <img
+              src={user?.profilePic}
+              alt="Profile"
+              className="w-32 h-32 rounded-full object-cover border-4 border-[var(--accent)] cursor-pointer hover:scale-105 transition"
+              onClick={() => setPreviewModal(true)}
+              onError={() => setImageError(true)}
+            />
+          )}
           <label
             htmlFor="changeProfile"
             className="absolute bottom-0 right-0 bg-[var(--accent)] hover:opacity-90 transition text-sm px-3 py-3 rounded-full cursor-pointer"

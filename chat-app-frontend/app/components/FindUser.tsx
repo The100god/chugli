@@ -16,7 +16,7 @@ let debounceTimeout: NodeJS.Timeout;
 // Function to search users by username
 const searchUsers = async (username: string, userId: string | null) => {
   const response = await fetch(
-    `http://localhost:5000/api/users/search?username=${username}&userId=${userId}`
+    `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users/search?username=${username}&userId=${userId}`
   );
   return await response.json();
 };

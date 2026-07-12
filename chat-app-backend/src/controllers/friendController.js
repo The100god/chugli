@@ -120,11 +120,16 @@ const handleFriendRequestSocket = async ({ senderId, receiverId, status,io, user
     );
     const friendDetails = await Promise.all(
       user.friends.map(async (friend) => {
-        const unreadMessagesCount = await Message.countDocuments({
-          sender: friend._id,
-          receiver: userId,
-          isRead: false,
-        });
+         const unreadMessagesCount = await Message.countDocuments({
+           sender: friend._id,
+           receiver: userId,
+           isRead: false,
+           $or: [
+             { expiresAt: null },
+             { expiresAt: { $exists: false } },
+             { expiresAt: { $gt: new Date() } },
+           ],
+         });
         return {
           friendId: friend._id,
           username: friend.username,
@@ -200,6 +205,11 @@ const getFriends = async (req, res) => {
             sender: friend._id,
             receiver: userId, // Check messages where friend is sender and user is receiver
             isRead: false, // Only count unread messages
+            $or: [
+              { expiresAt: null },
+              { expiresAt: { $exists: false } },
+              { expiresAt: { $gt: new Date() } },
+            ],
           });
 // console.log("unreadMessagesCount", unreadMessagesCount)
           return {

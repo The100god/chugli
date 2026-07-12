@@ -7,7 +7,7 @@ export const useSocket = (
   userId: string | null
 ): Socket<DefaultEventsMap, DefaultEventsMap> | null => {
   if (!socket && userId) {
-    socket = io("http://localhost:5000");
+    socket = io(process.env.NEXT_API_URL || "http://localhost:5000");
     console.log("socketconnect", socket)
     socket.emit("join", userId);
   }

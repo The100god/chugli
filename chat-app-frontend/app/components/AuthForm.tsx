@@ -72,8 +72,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     try {
       const url =
         type === "login"
-          ? "http://localhost:5000/api/auth/login"
-          : "http://localhost:5000/api/auth/signup";
+          ? `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/login`
+          : `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/signup`;
 
       const response = await axios.post(url, formData);
       console.log("Response:", response);
@@ -115,7 +115,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/google-login", {
+      const res = await fetch(`${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential }),
@@ -236,7 +236,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
               onClick={async () => {
                 try {
                   await axios.post(
-                    "http://localhost:5000/api/auth/resend-verification",
+                    `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/resend-verification`,
                     {
                       email: formData.email,
                     }

@@ -9,13 +9,13 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const createToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: "30d",
   });
 };
 
 const generateRefreshToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "30d",
+    expiresIn: "90d",
   });
 };
 //` Refresh Token Handler
