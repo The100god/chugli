@@ -17,7 +17,7 @@ export default function ChangePasswordForm({
   const [seeNewPassword, setSeeNewPassword] = useState(false);
   const [seeCurrentPassword, setSeeCurrentPassword] = useState(false);
 
-  const API_BASE = "http://localhost:5000/api/users"; // change if required
+  const API_BASE = `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/users`; // change if required
 
   useEffect(() => {
     return () => {

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import ScaleTN from "./ScaleTN";
 import {
   findFriendAtom,
   findFriendWithChatAtom,
@@ -51,7 +52,7 @@ const safeFriends = Array.isArray(friends) ? friends : [];
     // const userId = localStorage.getItem("userId");
     console.log("ids");
     if (userId) {
-      fetch("http://localhost:5000/api/message/mark-read", {
+      fetch(`${process.env.NEXT_API_URL || "http://localhost:5000"}/api/message/mark-read`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +73,7 @@ const safeFriends = Array.isArray(friends) ? friends : [];
   return (
     <div className="p-4 bg-[var(--background)] text-[var(--foreground)] h-full w-full rounded-md overflow-y-auto">
       {loading ? (
-        <p>Loading...</p>
+        <ScaleTN rows={5} />
       ): safeFriends.length < 1 ? (
         <div className="text-center mt-10 text-[var(--foreground)]/70">
           <p>No friends found 🫠</p>

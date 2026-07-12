@@ -50,8 +50,14 @@ export default function LeftSection() {
   // Fetch friends data from backend
   const fetchFriends = async () => {
     try {
+      const token = localStorage.getItem("chatAppToken");
       const response = await fetch(
-        `http://localhost:5000/api/friends/get-friends/${userId}`
+        `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/friends/get-friends/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const data = await response.json();
       // console.log(data)
@@ -59,7 +65,7 @@ export default function LeftSection() {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching friends:", error);
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -154,7 +160,7 @@ export default function LeftSection() {
   //       .catch((err) => console.error("Error fetching user:", err));
   //   };
 
-  
+
   //   fetchUserProfile();
 
   // }, [isAuthenticated]);

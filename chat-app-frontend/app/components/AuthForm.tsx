@@ -38,11 +38,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
-useEffect(() => {
-  const verified = searchParams.get("verified");
-  if (verified === "failed") setMessage("❌ Verification link expired.");
-  else if (verified === "already") setMessage("✅ Email already verified.");
-}, [searchParams]);
+  useEffect(() => {
+    const verified = searchParams.get("verified");
+    if (verified === "failed") setMessage("❌ Verification link expired.");
+    else if (verified === "already") setMessage("✅ Email already verified.");
+  }, [searchParams]);
 
   useEffect(() => {
     if (varUserId) {
@@ -72,8 +72,8 @@ useEffect(() => {
     try {
       const url =
         type === "login"
-          ? "http://localhost:5000/api/auth/login"
-          : "http://localhost:5000/api/auth/signup";
+          ? `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/login`
+          : `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/signup`;
 
       const response = await axios.post(url, formData);
       console.log("Response:", response);
@@ -100,14 +100,14 @@ useEffect(() => {
 
         setMessage(
           response.data.message ||
-            "Signup successful! Please check your email to verify your account before logging in."
+          "Signup successful! Please check your email to verify your account before logging in."
         );
       }
     } catch (error: any) {
       setError(
         error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Something went wrong"
+        error.response?.data?.error ||
+        "Something went wrong"
       );
       setMessage(null);
     }
@@ -115,7 +115,7 @@ useEffect(() => {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/google-login", {
+      const res = await fetch(`${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/google-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: credentialResponse.credential }),
@@ -236,7 +236,7 @@ useEffect(() => {
               onClick={async () => {
                 try {
                   await axios.post(
-                    "http://localhost:5000/api/auth/resend-verification",
+                    `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/auth/resend-verification`,
                     {
                       email: formData.email,
                     }

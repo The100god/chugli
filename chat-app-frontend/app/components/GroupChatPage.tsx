@@ -36,7 +36,7 @@ const GroupChatPage = () => {
   const [, setSelectedGroup] = useAtom(selectedGroupAtom);
   const [, setSelectedFriend] = useAtom(selectedFriendAtom); // clear friend
   const [groups, setGroups] = useState<Group[]>([]);
-  const [, setShowLeft] = useAtom(responsiveDeviceAtom); 
+  const [, setShowLeft] = useAtom(responsiveDeviceAtom);
 
   if (!userId && !socket) return null;
 
@@ -50,7 +50,7 @@ const GroupChatPage = () => {
         superAdmin: userId,
       };
       const groupData = await fetch(
-        "http://localhost:5000/api/groups/create-group",
+        `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/groups/create-group`,
         {
           method: "Post",
           headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ const GroupChatPage = () => {
     const fetchGroups = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/groups/${userId}`
+          `${process.env.NEXT_API_URL || "http://localhost:5000"}/api/groups/${userId}`
         );
         const allGroups = await response.json();
         // console.log("All Groups:", allGroups);
